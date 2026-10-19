@@ -600,6 +600,58 @@ select:focus-visible {
   padding-left: 3px;
 }
 
+.search-mode-tabs {
+  margin: 0 0 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.search-mode-tab {
+  padding: 8px 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--brown);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.search-mode-tab:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.search-mode-tab.is-active {
+  background: var(--brown-dark);
+  color: var(--paper);
+  border-color: var(--brown-dark);
+}
+
+.spotify-banner {
+  margin: 0 0 20px;
+  padding: 14px 18px;
+  background: rgba(29, 185, 84, .08);
+  border: 1px solid rgba(29, 185, 84, .32);
+  border-radius: 9px;
+  color: var(--brown-dark);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.spotify-banner strong {
+  color: #157337;
+}
+
+.spotify-banner code {
+  padding: 2px 6px;
+  background: rgba(0, 0, 0, .06);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
 .filter-row {
   margin: 0 0 20px;
   padding: 14px 16px;
@@ -668,6 +720,17 @@ select:focus-visible {
   background: linear-gradient(145deg, #d4a87f, #f2e5d5);
   border-radius: 7px;
   color: #78533b;
+}
+
+.song-art img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 7px;
+  z-index: 1;
 }
 
 .song-art::before,

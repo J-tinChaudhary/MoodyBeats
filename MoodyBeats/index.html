@@ -97,6 +97,17 @@
         </div>
         <button class="text-button" id="reset-filters" type="button">Clear filters <span aria-hidden="true">↺</span></button>
       </div>
+      <div class="search-mode-tabs" role="tablist" aria-label="Search Source">
+        <button type="button" class="search-mode-tab is-active" id="mode-catalogue" role="tab" aria-selected="true">
+          MoodyBeats Shelf
+        </button>
+        <button type="button" class="search-mode-tab" id="mode-spotify" role="tab" aria-selected="false">
+          ♫ Live Spotify Search (100M+ Songs)
+        </button>
+      </div>
+      <div class="spotify-banner" id="spotify-banner" hidden>
+        <strong>Spotify API Not Configured:</strong> Add <code>SPOTIFY_CLIENT_ID</code> and <code>SPOTIFY_CLIENT_SECRET</code> to your <code>.env</code> file to enable live search across Spotify's full catalogue.
+      </div>
       <div class="filter-row">
         <div class="filter-field">
           <label for="mood-filter">Mood</label>

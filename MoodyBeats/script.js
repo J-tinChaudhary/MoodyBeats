@@ -32,6 +32,10 @@ const playerFrame = document.querySelector("#player-frame");
 const playerStatus = document.querySelector("#player-status");
 const playerLink = document.querySelector("#player-link");
 const favoriteStatus = document.querySelector("#favorite-status");
+const modeCatalogueBtn = document.querySelector("#mode-catalogue");
+const modeSpotifyBtn = document.querySelector("#mode-spotify");
+const spotifyBanner = document.querySelector("#spotify-banner");
+const filterRow = document.querySelector(".filter-row");
 
 const pageCollectionId = new URLSearchParams(window.location.search).get("collection");
 const isPlaylistPage = document.body.classList.contains("playlist-page");
@@ -42,6 +46,8 @@ let totalSongs = 0;
 let latestRequest = 0;
 let searchTimer;
 let artistSearchTimer;
+let searchMode = "catalogue";
+let spotifyConfigured = null;
 const favoriteIds = new Set();
 
 function createElement(tag, className, text) {
@@ -203,21 +209,39 @@ function renderSongs(songs) {
     const card = createElement("article", "song-card");
     const artwork = createElement("div", `song-art song-art-${index % 6}`);
     artwork.setAttribute("aria-hidden", "true");
-    artwork.append(createElement("span", "art-symbol", "♫"));
-    artwork.append(createElement("span", "art-sip", "a little song"));
+    if (song.artworkUrl) {
+      const img = document.createElement("img");
+      img.src = song.artworkUrl;
+      img.alt = "";
+      img.loading = "lazy";
+      artwork.append(img);
+    } else {
+      artwork.append(createElement("span", "art-symbol", "♫"));
+      artwork.append(createElement("span", "art-sip", "a little song"));
+    }
 
     const info = createElement("div", "song-info");
     const title = createElement("h3", "", song.title);
     const artist = createElement("p", "song-artist", song.artist);
     const tags = createElement("div", "song-tags");
-    song.moods.forEach(moodId => {
-      const label = labels.moods.get(moodId);
-      if (label) tags.append(createElement("span", "song-tag", label));
-    });
-    song.genres.forEach(genreId => {
-      const label = labels.genres.get(genreId);
-      if (label) tags.append(createElement("span", "song-tag song-tag-genre", label));
-    });
+    if (Array.isArray(song.moods)) {
+      song.moods.forEach(moodId => {
+        const label = labels.moods.get(moodId);
+        if (label) tags.append(createElement("span", "song-tag", label));
+      });
+    }
+    if (Array.isArray(song.genres)) {
+      song.genres.forEach(genreId => {
+        const label = labels.genres.get(genreId);
+        if (label) tags.append(createElement("span", "song-tag song-tag-genre", label));
+      });
+    }
+    if (song.album) {
+      tags.append(createElement("span", "song-tag song-tag-genre", song.album));
+    }
+    if (song.spotifyTrackId && (!song.moods || song.moods.length === 0)) {
+      tags.append(createElement("span", "song-tag", "Spotify"));
+    }
 
     const actions = createElement("div", "song-actions");
     const selectButton = createElement("button", "song-play-button", "Play in the radio player");
@@ -238,11 +262,32 @@ async function toggleFavorite(song, button) {
   favoriteStatus.textContent = "";
   button.disabled = true;
   try {
-    const method = favoriteIds.has(song.id) ? "DELETE" : "PUT";
-    const response = await fetch(configuredApiUrl(`/me/favorites/${encodeURIComponent(song.id)}`), {
-      method,
-      headers: { Accept: "application/json" }
-    });
+    let response;
+    const isSaved = favoriteIds.has(song.id);
+    if (isSaved) {
+      response = await fetch(configuredApiUrl(`/me/favorites/${encodeURIComponent(song.id)}`), {
+        method: "DELETE",
+        headers: { Accept: "application/json" }
+      });
+    } else if (song.spotifyTrackId && (!song.id || song.id.startsWith("sp-"))) {
+      response = await fetch(configuredApiUrl("/spotify/save"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          spotifyTrackId: song.spotifyTrackId,
+          title: song.title,
+          artist: song.artist
+        })
+      });
+    } else {
+      response = await fetch(configuredApiUrl(`/me/favorites/${encodeURIComponent(song.id)}`), {
+        method: "PUT",
+        headers: { Accept: "application/json" }
+      });
+    }
     if (response.status === 401) {
       const message = createElement("span", "", "Sign in to save songs to your personal library. ");
       const link = createElement("a", "inline-link", "Go to your library");
@@ -260,8 +305,11 @@ async function toggleFavorite(song, button) {
       }
       throw new Error(body.error?.message || `The server returned HTTP ${response.status}.`);
     }
-    if (method === "PUT") favoriteIds.add(song.id);
-    else favoriteIds.delete(song.id);
+    if (isSaved) {
+      favoriteIds.delete(song.id);
+    } else {
+      favoriteIds.add(song.id);
+    }
     button.textContent = favoriteIds.has(song.id) ? "♥ Saved" : "♡ Save";
     button.setAttribute("aria-pressed", String(favoriteIds.has(song.id)));
     favoriteStatus.textContent = favoriteIds.has(song.id)
@@ -327,6 +375,43 @@ function updatePagination(paginationData) {
   nextPage.disabled = paginationData.offset + paginationData.limit >= totalSongs;
 }
 
+async function checkSpotifyStatus() {
+  try {
+    const status = await fetchJson("/spotify/status");
+    spotifyConfigured = Boolean(status.configured);
+    return spotifyConfigured;
+  } catch {
+    spotifyConfigured = false;
+    return false;
+  }
+}
+
+function setSearchMode(mode) {
+  if (searchMode === mode) return;
+  searchMode = mode;
+  offset = 0;
+  if (mode === "spotify") {
+    modeCatalogueBtn?.classList.remove("is-active");
+    modeCatalogueBtn?.setAttribute("aria-selected", "false");
+    modeSpotifyBtn?.classList.add("is-active");
+    modeSpotifyBtn?.setAttribute("aria-selected", "true");
+    if (filterRow) filterRow.hidden = true;
+    if (resetButton) resetButton.hidden = true;
+    if (spotifyConfigured === false && spotifyBanner) {
+      spotifyBanner.hidden = false;
+    }
+  } else {
+    modeSpotifyBtn?.classList.remove("is-active");
+    modeSpotifyBtn?.setAttribute("aria-selected", "false");
+    modeCatalogueBtn?.classList.add("is-active");
+    modeCatalogueBtn?.setAttribute("aria-selected", "true");
+    if (filterRow) filterRow.hidden = false;
+    if (resetButton) resetButton.hidden = false;
+    if (spotifyBanner) spotifyBanner.hidden = true;
+  }
+  loadSongs();
+}
+
 async function loadSongs() {
   const requestNumber = ++latestRequest;
   loadingState.hidden = false;
@@ -334,6 +419,51 @@ async function loadSongs() {
   emptyState.hidden = true;
   pagination.hidden = true;
   songGrid.replaceChildren();
+
+  if (searchMode === "spotify") {
+    if (!searchTerm) {
+      loadingState.hidden = true;
+      emptyState.hidden = false;
+      emptyTitle.textContent = "Search Spotify's 100M+ songs.";
+      emptyMessage.textContent = "Type an artist or song name in the search box above to explore all of Spotify.";
+      songCount.textContent = "";
+      return;
+    }
+    const params = new URLSearchParams({
+      q: searchTerm,
+      limit: String(PAGE_SIZE),
+      offset: String(offset)
+    });
+    try {
+      const result = await fetchJson(`/spotify/search?${params}`);
+      if (requestNumber !== latestRequest) return;
+      if (spotifyBanner) spotifyBanner.hidden = true;
+      renderSongs(result.tracks);
+      songCount.textContent = `${result.pagination.total} ${result.pagination.total === 1 ? "result" : "results"}`;
+      emptyState.hidden = result.tracks.length > 0;
+      if (result.tracks.length === 0) {
+        emptyTitle.textContent = "No Spotify tracks found.";
+        emptyMessage.textContent = `No tracks matched "${searchTerm}". Try checking your spelling or searching for another song.`;
+      }
+      updatePagination(result.pagination);
+    } catch (error) {
+      if (requestNumber !== latestRequest) return;
+      if (error.message?.includes("Spotify credentials are not configured") || error.status === 503) {
+        if (spotifyBanner) spotifyBanner.hidden = false;
+        errorTitle.textContent = "Spotify API credentials needed.";
+        errorMessage.textContent = "Add SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to your .env file to enable live Spotify search.";
+      } else {
+        errorTitle.textContent = "We couldn't reach Spotify.";
+        errorMessage.textContent = error.message;
+      }
+      retryButton.hidden = false;
+      errorState.hidden = false;
+      songCount.textContent = "";
+    } finally {
+      if (requestNumber === latestRequest) loadingState.hidden = true;
+    }
+    return;
+  }
 
   const params = new URLSearchParams({
     limit: String(PAGE_SIZE),
@@ -476,4 +606,8 @@ nextPage.addEventListener("click", () => {
   }
 });
 
+modeCatalogueBtn?.addEventListener("click", () => setSearchMode("catalogue"));
+modeSpotifyBtn?.addEventListener("click", () => setSearchMode("spotify"));
+
+checkSpotifyStatus();
 loadPageData();

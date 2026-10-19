@@ -69,13 +69,21 @@ function readConfig(environment = process.env) {
     apiBaseUrl = parsedApiBaseUrl.origin;
   }
 
+  const spotifyClientId = (environment.SPOTIFY_CLIENT_ID || "").trim();
+  const spotifyClientSecret = (environment.SPOTIFY_CLIENT_SECRET || "").trim();
+  if ((spotifyClientId && !spotifyClientSecret) || (!spotifyClientId && spotifyClientSecret)) {
+    throw new Error("Both SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET must be provided to enable Spotify integration.");
+  }
+
   return {
     port,
     databaseUrl,
     sessionSecret,
     allowedOrigins: new Set(allowedOrigins),
     apiBaseUrl,
-    nodeEnv: environment.NODE_ENV || "development"
+    nodeEnv: environment.NODE_ENV || "development",
+    spotifyClientId,
+    spotifyClientSecret
   };
 }
 

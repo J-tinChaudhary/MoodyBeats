@@ -353,6 +353,18 @@ async function listFilters(pool) {
   return { moods: moodsResult.rows, genres: genresResult.rows };
 }
 
+async function ensureSpotifySong(pool, { id, title, artist, spotifyTrackId }) {
+  await pool.query(
+    `INSERT INTO songs (id, title, artist, spotify_track_id)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (id) DO UPDATE SET
+       title = EXCLUDED.title,
+       artist = EXCLUDED.artist,
+       spotify_track_id = EXCLUDED.spotify_track_id`,
+    [id, title, artist, spotifyTrackId]
+  );
+}
+
 module.exports = {
   DEFAULT_LIMIT,
   MAX_LIMIT,
@@ -380,5 +392,7 @@ module.exports = {
   renamePlaylist,
   deletePlaylist,
   addPlaylistSong,
-  removePlaylistSong
+  removePlaylistSong,
+  ensureSpotifySong
 };
+

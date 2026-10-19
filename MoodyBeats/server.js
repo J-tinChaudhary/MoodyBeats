@@ -31,7 +31,9 @@ const app = createApp({
     tableName: "user_sessions",
     createTableIfMissing: false
   }),
-  secureCookies: config.nodeEnv === "production"
+  secureCookies: config.nodeEnv === "production",
+  spotifyClientId: config.spotifyClientId,
+  spotifyClientSecret: config.spotifyClientSecret
 });
 const server = app.listen(config.port, () => {
   console.log(`MoodyBeats is running at http://localhost:${config.port}`);

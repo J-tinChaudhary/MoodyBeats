@@ -102,6 +102,8 @@ Open <http://localhost:3000>. Use **Ctrl+C** in the terminal to stop the server.
 | `ALLOWED_ORIGINS` | No | Exact origins allowed to make cross-origin read requests. Account writes remain same-origin. |
 | `API_BASE_URL` | No | Public API origin if the served frontend needs a separate API origin. Leave empty for the normal same-origin setup. |
 | `PGSSLMODE` | No | Set to `require` when your PostgreSQL host requires TLS. |
+| `SPOTIFY_CLIENT_ID` | No | Spotify Developer application Client ID. Enables live search across 100M+ songs. |
+| `SPOTIFY_CLIENT_SECRET` | No | Spotify Developer application Client Secret. |
 | `TEST_DATABASE_URL` | No | Separate disposable PostgreSQL database for the optional real-PostgreSQL integration test. |
 
 The server reports missing or invalid configuration at startup without printing the session secret or database URL.
@@ -116,6 +118,9 @@ All routes are under `/api`; errors are JSON with an error code and message. Son
 | `GET /api/filters` | List mood and genre filters. |
 | `GET /api/songs?q=&mood=&genre=&collection=&limit=&offset=` | Search/filter songs. |
 | `GET /api/songs/:id` | Get one catalogue song. |
+| `GET /api/spotify/status` | Check if Spotify API credentials are configured. |
+| `GET /api/spotify/search?q=&limit=&offset=` | Live search Spotify's catalog for tracks. |
+| `POST /api/spotify/save` | Save a Spotify track to user's favorites and library. |
 | `GET /api/collections` | List collections and song counts. |
 | `GET /api/collections/:id` | Get a collection and its filtered songs. |
 | `GET /api/artists?q=&limit=&offset=` | Search performer credits appearing in catalogue rows. |

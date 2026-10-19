@@ -8,6 +8,7 @@ const session = require("express-session");
 const { rateLimit } = require("express-rate-limit");
 const bcrypt = require("bcryptjs");
 const repository = require("./repository");
+const { createSpotifyService, SpotifyError } = require("./spotify");
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 const DUMMY_PASSWORD_HASH = "$2b$12$CM9bhYh.pkdSeZjZ6qgCBeVIdDbaQb2vIVfB/Q2nwvEUcFVeMWEiS";
@@ -19,7 +20,10 @@ function createApp({
   sessionSecret,
   sessionStore,
   secureCookies = false,
-  logger = console
+  logger = console,
+  spotifyService,
+  spotifyClientId = "",
+  spotifyClientSecret = ""
 }) {
   if (!pool || typeof pool.query !== "function") {
     throw new Error("createApp requires a PostgreSQL-compatible pool.");
@@ -28,6 +32,11 @@ function createApp({
     throw new Error("createApp requires a session secret of at least 32 characters.");
   }
 
+  const spotify = spotifyService || createSpotifyService({
+    clientId: spotifyClientId,
+    clientSecret: spotifyClientSecret
+  });
+
   const app = express();
   app.disable("x-powered-by");
   if (secureCookies) app.set("trust proxy", 1);
@@ -35,7 +44,8 @@ function createApp({
     contentSecurityPolicy: {
       directives: {
         connectSrc: ["'self'", ...(apiBaseUrl ? [apiBaseUrl] : [])],
-        frameSrc: ["'self'", "https://open.spotify.com"]
+        frameSrc: ["'self'", "https://open.spotify.com"],
+        imgSrc: ["'self'", "data:", "https://*.scdn.co", "https://i.scdn.co"]
       }
     }
   }));
@@ -216,6 +226,83 @@ function createApp({
         });
       }
       response.json({ song });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/spotify/status", (request, response) => {
+    response.json({ configured: spotify.isConfigured() });
+  });
+
+  app.get("/api/spotify/search", async (request, response, next) => {
+    try {
+      const q = request.query.q;
+      if (typeof q !== "string" || !q.trim()) {
+        return response.status(400).json({
+          error: { code: "INVALID_QUERY", message: 'Search query "q" is required and cannot be empty.' }
+        });
+      }
+      const limit = request.query.limit;
+      const offset = request.query.offset;
+      const market = request.query.market || "IN";
+      const result = await spotify.searchTracks(q, { limit, offset, market });
+      response.json(result);
+    } catch (error) {
+      if (error instanceof SpotifyError) {
+        return response.status(error.status).json({
+          error: {
+            code: error.code,
+            message: error.message,
+            ...(error.retryAfter ? { retryAfter: error.retryAfter } : {})
+          }
+        });
+      }
+      next(error);
+    }
+  });
+
+  app.post("/api/spotify/save", async (request, response, next) => {
+    try {
+      const user = await currentUser(request, response);
+      if (!user) return;
+
+      const body = requireBody(request);
+      const spotifyTrackId = body.spotifyTrackId;
+      const title = body.title;
+      const artist = body.artist;
+
+      if (typeof spotifyTrackId !== "string" || !/^[A-Za-z0-9]{22}$/.test(spotifyTrackId)) {
+        return response.status(400).json({
+          error: { code: "INVALID_TRACK_ID", message: "A valid 22-character Spotify track ID is required." }
+        });
+      }
+      if (typeof title !== "string" || !title.trim() || title.trim().length > 200) {
+        return response.status(400).json({
+          error: { code: "INVALID_TITLE", message: "Track title is required and must be 200 characters or fewer." }
+        });
+      }
+      if (typeof artist !== "string" || !artist.trim() || artist.trim().length > 200) {
+        return response.status(400).json({
+          error: { code: "INVALID_ARTIST", message: "Artist name is required and must be 200 characters or fewer." }
+        });
+      }
+
+      const songId = `sp-${spotifyTrackId.toLowerCase()}`;
+      await repository.ensureSpotifySong(pool, {
+        id: songId,
+        title: title.trim(),
+        artist: artist.trim(),
+        spotifyTrackId
+      });
+
+      const added = await repository.addFavorite(pool, user.id, songId);
+      response.status(added ? 201 : 200).json({
+        status: added ? "added" : "already-favorite",
+        songId,
+        title: title.trim(),
+        artist: artist.trim()
+      });
     } catch (error) {
       next(error);
     }
