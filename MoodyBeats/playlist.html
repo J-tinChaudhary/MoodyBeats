@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f2e8">
+  <meta name="description" content="Explore a Chai & Song collection and find a song for the moment.">
+  <title>Collection — Chai &amp; Song</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body class="playlist-page">
+  <header class="site-header" id="top">
+    <a class="wordmark" href="index.html" aria-label="Chai and Song home">
+      Chai <span aria-hidden="true">&amp;</span> Song<span class="wordmark-dot" aria-hidden="true">.</span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html#collections">Collections</a>
+      <a href="index.html#songs">All songs</a>
+      <a href="index.html#about">About</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="playlist-hero" aria-labelledby="collection-title">
+      <a class="back-link" href="index.html#collections"><span aria-hidden="true">←</span> All collections</a>
+      <p class="eyebrow" id="collection-eyebrow">A CHAI &amp; SONG COLLECTION</p>
+      <h1 id="collection-title">Find your <span>moment.</span></h1>
+      <p class="hero-copy" id="collection-description">A little music for wherever you are.</p>
+    </section>
+
+    <section class="songs-section section-wrap playlist-songs" id="songs" aria-labelledby="songs-title">
+      <div class="section-heading songs-heading">
+        <div>
+          <p class="eyebrow">TAKE YOUR PICK</p>
+          <h2 id="songs-title">Songs for <span>this moment.</span></h2>
+          <p class="section-intro" id="songs-description">Search within this collection or narrow it down by mood and genre.</p>
+        </div>
+        <button class="text-button" id="reset-filters" type="button">Clear filters <span aria-hidden="true">↺</span></button>
+      </div>
+      <form class="search-form playlist-search" id="search-form" role="search">
+        <label class="visually-hidden" for="search-input">Search songs by title or artist</label>
+        <span class="search-symbol" aria-hidden="true">⌕</span>
+        <input id="search-input" name="q" type="search" placeholder="Try a song or artist..." autocomplete="off">
+        <button class="button button-dark" type="submit">Find a song</button>
+      </form>
+      <div class="filter-row">
+        <div class="filter-field">
+          <label for="mood-filter">Mood</label>
+          <select id="mood-filter" name="mood">
+            <option value="">Any mood</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="genre-filter">Genre</label>
+          <select id="genre-filter" name="genre">
+            <option value="">Any genre</option>
+          </select>
+        </div>
+        <p class="result-count" id="song-count" role="status" aria-live="polite"></p>
+      </div>
+      <p class="state-message" id="loading-state" role="status" hidden>Pouring a fresh cup of songs...</p>
+      <div class="empty-state error-state" id="error-state" role="alert" hidden>
+        <span class="empty-cup" aria-hidden="true">☕</span>
+        <h3 id="error-title">We couldn't reach the song shelf.</h3>
+        <p id="error-message">Check that the server is running, then try again.</p>
+        <button class="button button-dark retry-button" id="retry-button" type="button">Try again</button>
+      </div>
+      <div class="song-grid" id="song-grid" aria-live="polite"></div>
+      <div class="empty-state" id="empty-state" hidden>
+        <span class="empty-cup" aria-hidden="true">☕</span>
+        <h3>No songs in this cup just yet.</h3>
+        <p>Try another search, mood, or genre to find your next song.</p>
+      </div>
+      <nav class="pagination" id="pagination" aria-label="Song pages" hidden>
+        <button class="text-button" id="previous-page" type="button">← Previous</button>
+        <span id="page-status" role="status"></span>
+        <button class="text-button" id="next-page" type="button">Next →</button>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="about">
+    <a class="wordmark footer-wordmark" href="index.html">Chai <span aria-hidden="true">&amp;</span> Song<span class="wordmark-dot" aria-hidden="true">.</span></a>
+    <p>A small, independent song-discovery project. Spotify embeds appear where verified; no audio is hosted here.</p>
+    <a class="github-link" href="https://github.com/your-username/ChaiAndSong" target="_blank" rel="noopener noreferrer">Add your GitHub repository <span aria-hidden="true">↗</span></a>
+  </footer>
+</body>
+</html>

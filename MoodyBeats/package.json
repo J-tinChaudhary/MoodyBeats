@@ -1,0 +1,27 @@
+{
+  "name": "chai-and-song",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A mood-based song discovery site with an Express and PostgreSQL backend.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "db:migrate": "node scripts/migrate.js",
+    "db:seed": "node scripts/seed.js",
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "pg-mem": "^3.0.5",
+    "supertest": "^7.1.4"
+  }
+}

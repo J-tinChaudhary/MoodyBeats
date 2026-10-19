@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f2e8">
+  <meta name="description" content="Find songs for every mood with Chai & Song: a little chai, a little music, and a playlist for the moment.">
+  <title>Chai &amp; Song — Har mood ki chai, har pal ka gaana.</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="site-header" id="top">
+    <a class="wordmark" href="index.html" aria-label="Chai and Song home">
+      Chai <span aria-hidden="true">&amp;</span> Song<span class="wordmark-dot" aria-hidden="true">.</span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#collections">Collections</a>
+      <a href="#songs">All songs</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <p class="eyebrow"><span aria-hidden="true">☕</span> A LITTLE CHAI, A LITTLE MUSIC</p>
+        <h1 id="hero-title">Har mood ki chai,<br><span>har pal ka gaana.</span></h1>
+        <p class="hero-copy">Some moments call for a warm cup. Others need just the right song. Find a little of both, right here.</p>
+        <form class="search-form" id="search-form" role="search">
+          <label class="visually-hidden" for="search-input">Search songs by title or artist</label>
+          <span class="search-symbol" aria-hidden="true">⌕</span>
+          <input id="search-input" name="q" type="search" placeholder="Try a song or artist..." autocomplete="off">
+          <button class="button button-dark" type="submit">Find a song</button>
+        </form>
+        <p class="search-note">A good song is always just one sip away.</p>
+      </div>
+      <div class="hero-cup" aria-hidden="true">
+        <span class="cup-steam steam-one"></span>
+        <span class="cup-steam steam-two"></span>
+        <span class="cup">☕</span>
+        <span class="cup-caption">take a moment</span>
+      </div>
+    </section>
+
+    <section class="collections section-wrap" id="collections" aria-labelledby="collections-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">PICK YOUR MOMENT</p>
+          <h2 id="collections-title">A playlist for <span>that feeling.</span></h2>
+        </div>
+        <p class="section-intro">Choose a collection and let the next song find you.</p>
+      </div>
+      <div class="collection-grid" id="collection-grid"></div>
+    </section>
+
+    <section class="songs-section section-wrap" id="songs" aria-labelledby="songs-title">
+      <div class="section-heading songs-heading">
+        <div>
+          <p class="eyebrow">YOUR NEXT LITTLE DISCOVERY</p>
+          <h2 id="songs-title">Browse the <span>song shelf.</span></h2>
+          <p class="section-intro" id="songs-description">Search the catalogue or mix a mood with a genre.</p>
+        </div>
+        <button class="text-button" id="reset-filters" type="button">Clear filters <span aria-hidden="true">↺</span></button>
+      </div>
+      <div class="filter-row">
+        <div class="filter-field">
+          <label for="mood-filter">Mood</label>
+          <select id="mood-filter" name="mood">
+            <option value="">Any mood</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="genre-filter">Genre</label>
+          <select id="genre-filter" name="genre">
+            <option value="">Any genre</option>
+          </select>
+        </div>
+        <p class="result-count" id="song-count" role="status" aria-live="polite"></p>
+      </div>
+      <p class="state-message" id="loading-state" role="status" hidden>Pouring a fresh cup of songs...</p>
+      <div class="empty-state error-state" id="error-state" role="alert" hidden>
+        <span class="empty-cup" aria-hidden="true">☕</span>
+        <h3 id="error-title">We couldn't reach the song shelf.</h3>
+        <p id="error-message">Check that the server is running, then try again.</p>
+        <button class="button button-dark retry-button" id="retry-button" type="button">Try again</button>
+      </div>
+      <div class="song-grid" id="song-grid" aria-live="polite"></div>
+      <div class="empty-state" id="empty-state" hidden>
+        <span class="empty-cup" aria-hidden="true">☕</span>
+        <h3>No songs in this cup just yet.</h3>
+        <p>Try another search, mood, or genre to find your next song.</p>
+      </div>
+      <nav class="pagination" id="pagination" aria-label="Song pages" hidden>
+        <button class="text-button" id="previous-page" type="button">← Previous</button>
+        <span id="page-status" role="status"></span>
+        <button class="text-button" id="next-page" type="button">Next →</button>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="about">
+    <a class="wordmark footer-wordmark" href="#top">Chai <span aria-hidden="true">&amp;</span> Song<span class="wordmark-dot" aria-hidden="true">.</span></a>
+    <p>A small, independent song-discovery project. Spotify embeds appear where verified; no audio is hosted here.</p>
+    <a class="github-link" href="https://github.com/your-username/ChaiAndSong" target="_blank" rel="noopener noreferrer">Add your GitHub repository <span aria-hidden="true">↗</span></a>
+  </footer>
+</body>
+</html>

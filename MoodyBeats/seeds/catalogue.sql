@@ -1,0 +1,112 @@
+INSERT INTO moods (id, label) VALUES
+  ('relaxed', 'Relaxed'),
+  ('heartbreak', 'Heartbreak'),
+  ('romantic', 'Romantic'),
+  ('rainy', 'Rainy day'),
+  ('upbeat', 'Upbeat')
+ON CONFLICT (id) DO UPDATE SET label = EXCLUDED.label;
+
+INSERT INTO genres (id, label) VALUES
+  ('bollywood', 'Bollywood'),
+  ('indie', 'Indie'),
+  ('acoustic', 'Acoustic'),
+  ('pop', 'Pop'),
+  ('folk', 'Folk')
+ON CONFLICT (id) DO UPDATE SET label = EXCLUDED.label;
+
+INSERT INTO collections (id, title, description, symbol, color) VALUES
+  ('chai-chill', 'Chai & Chill', 'Slow sips, soft sounds, and a little room to breathe.', '☕', 'chai'),
+  ('heartbreak', 'Heartbreak', 'For the heavy heart and the songs that understand.', '♡', 'heartbreak'),
+  ('romance', 'Romance', 'A softer soundtrack for two, or daydreaming about it.', '✿', 'romance'),
+  ('rainy-day', 'Rainy Day', 'Rain on the window, a warm cup, and songs to stay in for.', '☂', 'rainy'),
+  ('bollywood', 'Bollywood', 'Big-screen feelings and familiar tunes to sing along to.', '✦', 'bollywood'),
+  ('indie', 'Indie', 'Thoughtful voices and lovely little corners of sound.', '♫', 'indie')
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  description = EXCLUDED.description,
+  symbol = EXCLUDED.symbol,
+  color = EXCLUDED.color;
+
+INSERT INTO songs (id, title, artist, moods, genres, spotify_track_id) VALUES
+  ('iktara', 'Iktara', 'Kavita Seth, Amitabh Bhattacharya', ARRAY['relaxed','romantic'], ARRAY['bollywood','acoustic'], NULL),
+  ('shaam', 'Shaam', 'Amit Trivedi, Nikhil D''Souza, Neuman Pinto', ARRAY['relaxed','romantic'], ARRAY['bollywood','acoustic'], NULL),
+  ('kasoor', 'Kasoor', 'Prateek Kuhad', ARRAY['relaxed','romantic','rainy'], ARRAY['indie','acoustic'], NULL),
+  ('alag-aasmaan', 'Alag Aasmaan', 'Anuv Jain', ARRAY['relaxed','heartbreak'], ARRAY['indie','acoustic'], NULL),
+  ('channa-mereya', 'Channa Mereya', 'Arijit Singh', ARRAY['heartbreak'], ARRAY['bollywood'], NULL),
+  ('agar-tum-saath-ho', 'Agar Tum Saath Ho', 'Alka Yagnik, Arijit Singh', ARRAY['heartbreak','romantic'], ARRAY['bollywood'], NULL),
+  ('phir-le-aya-dil', 'Phir Le Aya Dil', 'Arijit Singh', ARRAY['heartbreak','relaxed'], ARRAY['bollywood','folk'], NULL),
+  ('tune-jo-na-kaha', 'Tune Jo Na Kaha', 'Mohit Chauhan', ARRAY['heartbreak','rainy'], ARRAY['bollywood','acoustic'], NULL),
+  ('hawayein', 'Hawayein', 'Arijit Singh', ARRAY['romantic','relaxed'], ARRAY['bollywood','pop'], NULL),
+  ('raabta', 'Raabta', 'Arijit Singh', ARRAY['romantic'], ARRAY['bollywood','pop'], NULL),
+  ('nazm-nazm', 'Nazm Nazm', 'Arko', ARRAY['romantic','relaxed'], ARRAY['bollywood','acoustic'], NULL),
+  ('raataan-lambiyan', 'Raataan Lambiyan', 'Jubin Nautiyal, Asees Kaur', ARRAY['romantic','rainy'], ARRAY['bollywood','pop'], NULL),
+  ('baarishein', 'Baarishein', 'Anuv Jain', ARRAY['rainy','romantic','heartbreak'], ARRAY['indie','acoustic'], NULL),
+  ('saibo', 'Saibo', 'Shreya Ghoshal, Tochi Raina', ARRAY['rainy','romantic','relaxed'], ARRAY['bollywood','acoustic'], NULL),
+  ('kabira', 'Kabira (Encore)', 'Arijit Singh, Harshdeep Kaur', ARRAY['rainy','heartbreak'], ARRAY['bollywood','folk'], NULL),
+  ('ilahi', 'Ilahi', 'Arijit Singh', ARRAY['upbeat'], ARRAY['bollywood','pop'], NULL),
+  ('galliyan', 'Galliyan', 'Ankit Tiwari', ARRAY['romantic','heartbreak'], ARRAY['bollywood','pop'], NULL),
+  ('patakha-guddi', 'Patakha Guddi', 'Nooran Sisters', ARRAY['upbeat'], ARRAY['bollywood','folk'], NULL),
+  ('husn', 'Husn', 'Anuv Jain', ARRAY['heartbreak','romantic'], ARRAY['indie','acoustic'], NULL),
+  ('cold-mess', 'Cold/Mess', 'Prateek Kuhad', ARRAY['rainy','heartbreak','relaxed'], ARRAY['indie','acoustic'], NULL)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  artist = EXCLUDED.artist,
+  moods = EXCLUDED.moods,
+  genres = EXCLUDED.genres;
+
+INSERT INTO collection_songs (collection_id, song_id) VALUES
+  ('chai-chill', 'iktara'),
+  ('chai-chill', 'shaam'),
+  ('chai-chill', 'kasoor'),
+  ('chai-chill', 'alag-aasmaan'),
+  ('chai-chill', 'cold-mess'),
+  ('heartbreak', 'alag-aasmaan'),
+  ('heartbreak', 'channa-mereya'),
+  ('heartbreak', 'agar-tum-saath-ho'),
+  ('heartbreak', 'phir-le-aya-dil'),
+  ('heartbreak', 'tune-jo-na-kaha'),
+  ('heartbreak', 'baarishein'),
+  ('heartbreak', 'kabira'),
+  ('heartbreak', 'galliyan'),
+  ('heartbreak', 'husn'),
+  ('heartbreak', 'cold-mess'),
+  ('romance', 'iktara'),
+  ('romance', 'shaam'),
+  ('romance', 'kasoor'),
+  ('romance', 'agar-tum-saath-ho'),
+  ('romance', 'hawayein'),
+  ('romance', 'raabta'),
+  ('romance', 'nazm-nazm'),
+  ('romance', 'raataan-lambiyan'),
+  ('romance', 'baarishein'),
+  ('romance', 'saibo'),
+  ('romance', 'galliyan'),
+  ('romance', 'husn'),
+  ('rainy-day', 'kasoor'),
+  ('rainy-day', 'tune-jo-na-kaha'),
+  ('rainy-day', 'raataan-lambiyan'),
+  ('rainy-day', 'baarishein'),
+  ('rainy-day', 'saibo'),
+  ('rainy-day', 'kabira'),
+  ('rainy-day', 'cold-mess'),
+  ('bollywood', 'iktara'),
+  ('bollywood', 'shaam'),
+  ('bollywood', 'channa-mereya'),
+  ('bollywood', 'agar-tum-saath-ho'),
+  ('bollywood', 'phir-le-aya-dil'),
+  ('bollywood', 'tune-jo-na-kaha'),
+  ('bollywood', 'hawayein'),
+  ('bollywood', 'raabta'),
+  ('bollywood', 'nazm-nazm'),
+  ('bollywood', 'raataan-lambiyan'),
+  ('bollywood', 'saibo'),
+  ('bollywood', 'kabira'),
+  ('bollywood', 'ilahi'),
+  ('bollywood', 'galliyan'),
+  ('bollywood', 'patakha-guddi'),
+  ('indie', 'kasoor'),
+  ('indie', 'alag-aasmaan'),
+  ('indie', 'baarishein'),
+  ('indie', 'husn'),
+  ('indie', 'cold-mess')
+ON CONFLICT (collection_id, song_id) DO NOTHING;
