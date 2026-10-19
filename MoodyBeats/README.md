@@ -1,6 +1,8 @@
-# ChaiAndSong
+# MoodyBeats
 
-Chai & Song is a small music-discovery website inspired by Indian chai culture. It keeps the existing plain HTML, CSS, and browser JavaScript frontend, and adds an Express API backed by PostgreSQL.
+MoodyBeats is a desi music-discovery website inspired by Indian chai taps, train journeys, retro radio, and late-night city moods. It keeps the existing plain HTML, CSS, and browser JavaScript frontend, and adds an Express API backed by PostgreSQL.
+
+The project name is a working title for this codebase. Before any commercial launch, check domain, social-handle, and trademark availability separately; this README is not a legal or commercial claim of availability.
 
 Implemented features include responsive homepage and collection pages, six database-backed collections, song search by title or artist, combined mood/genre/collection filtering, pagination, loading/empty/error states, and visible Spotify links. A Spotify embed is rendered only for a song with a verified track ID; the starter catalogue intentionally has none, so it currently uses Spotify search links instead.
 

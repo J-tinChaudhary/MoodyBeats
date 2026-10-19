@@ -52,7 +52,7 @@ async function fetchJson(path) {
     });
   } catch (error) {
     if (error instanceof TypeError) {
-      throw new Error("Can't reach the Chai & Song server. Check that it is running and try again.");
+      throw new Error("Can't reach the MoodyBeats server. Check that it is running and try again.");
     }
     throw error;
   }
@@ -233,7 +233,7 @@ async function loadSongs() {
     const result = await fetchJson(endpoint);
     if (requestNumber !== latestRequest) return;
     if (isPlaylistPage) {
-      document.title = `${result.collection.title} — Chai & Song`;
+      document.title = `${result.collection.title} — MoodyBeats`;
       pageCollectionTitle.textContent = result.collection.title;
       pageCollectionDescription.textContent = result.collection.description;
     }
@@ -257,7 +257,7 @@ async function loadSongs() {
 
 async function loadPageData() {
   if (isPlaylistPage && !pageCollectionId) {
-    document.title = "Collection not found — Chai & Song";
+    document.title = "Collection not found — MoodyBeats";
     pageCollectionTitle.textContent = "Collection not found";
     pageCollectionDescription.textContent = "Choose one of our collections to find your next song.";
     errorTitle.textContent = "Collection not found.";

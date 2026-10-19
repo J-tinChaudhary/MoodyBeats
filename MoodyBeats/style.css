@@ -84,7 +84,7 @@ select:focus-visible {
   letter-spacing: -1.2px;
 }
 
-.wordmark > span:first-child {
+.wordmark-highlight {
   color: var(--orange);
   font-style: italic;
 }

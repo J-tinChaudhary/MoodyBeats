@@ -24,7 +24,7 @@ const app = createApp({
   apiBaseUrl: config.apiBaseUrl
 });
 const server = app.listen(config.port, () => {
-  console.log(`Chai & Song is running at http://localhost:${config.port}`);
+  console.log(`MoodyBeats is running at http://localhost:${config.port}`);
 });
 
 let isShuttingDown = false;

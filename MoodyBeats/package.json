@@ -1,8 +1,8 @@
 {
-  "name": "chai-and-song",
+  "name": "moodybeats",
   "version": "1.0.0",
   "private": true,
-  "description": "A mood-based song discovery site with an Express and PostgreSQL backend.",
+  "description": "A desi mood-based music discovery site with an Express and PostgreSQL backend.",
   "engines": {
     "node": ">=22"
   },
