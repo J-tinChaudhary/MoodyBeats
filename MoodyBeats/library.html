@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f2e8">
+  <meta name="description" content="Keep your favourite desi songs and private playlists together in your MoodyBeats library.">
+  <title>Your Library — MoodyBeats</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js" defer></script>
+  <script src="library.js" defer></script>
+</head>
+<body class="library-page">
+  <header class="site-header" id="top">
+    <a class="wordmark" href="index.html" aria-label="MoodyBeats home">
+      Moody<span class="wordmark-highlight">Beats</span><span class="wordmark-dot" aria-hidden="true">.</span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html#collections">Collections</a>
+      <a href="index.html#artists">Artists</a>
+      <a href="index.html#songs">All songs</a>
+      <a href="library.html" aria-current="page">Your library</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="library-hero">
+      <a class="back-link" href="index.html#songs"><span aria-hidden="true">←</span> Back to the song shelf</a>
+      <p class="eyebrow">YOUR OWN LITTLE CORNER</p>
+      <h1>Your <span>library.</span></h1>
+      <p class="hero-copy">Save songs that stay with you and make private playlists for your next chai break or long ride.</p>
+    </section>
+
+    <section class="library-content section-wrap">
+      <div id="library-loading" class="state-message" role="status">Checking your library…</div>
+      <div id="library-error" class="empty-state error-state" role="alert" hidden>
+        <span class="empty-cup" aria-hidden="true">☕</span>
+        <h2>We couldn't open your library.</h2>
+        <p id="library-error-message">Please try again.</p>
+        <button class="button button-dark" id="library-retry" type="button">Try again</button>
+      </div>
+      <section id="auth-panel" class="auth-panel" aria-labelledby="auth-title" hidden>
+        <div class="auth-intro">
+          <p class="eyebrow">A MOODYBEATS ACCOUNT</p>
+          <h2 id="auth-title">Keep your favourites <span>close.</span></h2>
+          <p>Sign up with an email and password, or sign in to pick up where you left off. No Spotify account is needed.</p>
+        </div>
+        <div class="auth-card">
+          <div class="auth-tabs" role="group" aria-label="Choose an account action">
+            <button id="show-login" class="auth-tab is-active" type="button" aria-pressed="true">Sign in</button>
+            <button id="show-register" class="auth-tab" type="button" aria-pressed="false">Create account</button>
+          </div>
+          <form id="auth-form">
+            <label for="auth-email">Email</label>
+            <input id="auth-email" name="email" type="email" maxlength="254" autocomplete="email" required>
+            <label for="auth-password">Password</label>
+            <input id="auth-password" name="password" type="password" minlength="12" maxlength="72" autocomplete="current-password" required>
+            <p id="password-hint" class="form-hint">Use at least 12 characters. Your password is stored as a salted hash.</p>
+            <button class="button button-dark auth-submit" id="auth-submit" type="submit">Sign in</button>
+            <p id="auth-status" class="form-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <section id="personal-library" hidden>
+        <div class="library-heading">
+          <div>
+            <p class="eyebrow">SIGNED IN AS <span id="account-email"></span></p>
+            <h2>Your saved <span>sounds.</span></h2>
+          </div>
+          <button class="text-button" id="sign-out" type="button">Sign out</button>
+        </div>
+        <p id="account-status" class="form-status" role="status" aria-live="polite"></p>
+
+        <section class="library-block" aria-labelledby="favorites-title">
+          <div class="library-block-heading">
+            <div>
+              <p class="eyebrow">KEPT CLOSE</p>
+              <h3 id="favorites-title">Favourite songs</h3>
+            </div>
+          </div>
+          <div id="favorite-list" class="library-list"></div>
+          <p id="favorites-empty" class="library-empty" hidden>No favourites saved yet. Browse the <a href="index.html#songs">song shelf</a> and save one for later.</p>
+        </section>
+
+        <section class="library-block" aria-labelledby="playlists-title">
+          <div class="library-block-heading">
+            <div>
+              <p class="eyebrow">MADE BY YOU</p>
+              <h3 id="playlists-title">Private playlists</h3>
+            </div>
+          </div>
+          <form id="create-playlist-form" class="create-playlist-form">
+            <label class="visually-hidden" for="new-playlist-name">New playlist name</label>
+            <input id="new-playlist-name" name="name" type="text" maxlength="80" placeholder="Name a new playlist…" required>
+            <button class="button button-dark" type="submit">Create playlist</button>
+          </form>
+          <p id="playlist-status" class="form-status" role="status" aria-live="polite"></p>
+          <div id="playlist-list" class="playlist-list"></div>
+          <p id="playlists-empty" class="library-empty" hidden>No playlists yet. Give your next mood its own little mixtape.</p>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="wordmark footer-wordmark" href="index.html">Moody<span class="wordmark-highlight">Beats</span><span class="wordmark-dot" aria-hidden="true">.</span></a>
+    <p>Personal playlists are private to your account. MoodyBeats does not host or stream audio.</p>
+    <a class="github-link" href="index.html#about">About the project <span aria-hidden="true">↗</span></a>
+  </footer>
+</body>
+</html>

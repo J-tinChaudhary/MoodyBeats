@@ -6,6 +6,7 @@ const request = require("supertest");
 const { createApp } = require("../src/app");
 const { readConfig } = require("../src/config");
 const { spotifyLinks } = require("../src/repository");
+const testSessionSecret = "a-test-session-secret-with-at-least-32-characters";
 
 const sampleSong = {
   id: "cold-mess",
@@ -63,29 +64,46 @@ function makeTestApp() {
   const app = createApp({
     pool,
     allowedOrigins: new Set(["https://chai.example"]),
+    sessionSecret: testSessionSecret,
     logger: { error: (...values) => loggedErrors.push(values) }
   });
   return { app, pool, loggedErrors };
 }
 
+const validTestConfig = {
+  DATABASE_URL: "postgres://localhost/catalogue",
+  SESSION_SECRET: "a-test-secret-that-is-at-least-32-characters"
+};
+
 test("configuration requires a PostgreSQL URL and validates the port", () => {
   assert.throws(() => readConfig({}), /DATABASE_URL is required/);
   assert.throws(
-    () => readConfig({ DATABASE_URL: "https://example.test", PORT: "3000" }),
+    () => readConfig({ ...validTestConfig, DATABASE_URL: "https://example.test", PORT: "3000" }),
     /postgres/
   );
   assert.throws(
-    () => readConfig({ DATABASE_URL: "postgres://localhost/catalogue", PORT: "70000" }),
+    () => readConfig({ ...validTestConfig, PORT: "70000" }),
     /PORT/
   );
   assert.equal(
-    readConfig({ DATABASE_URL: "postgres://localhost/catalogue", PORT: "3001" }).port,
+    readConfig({ ...validTestConfig, PORT: "3001" }).port,
     3001
+  );
+  assert.throws(
+    () => readConfig({ DATABASE_URL: "postgres://localhost/catalogue" }),
+    /SESSION_SECRET/
+  );
+  assert.throws(
+    () => readConfig({
+      DATABASE_URL: "postgres://localhost/catalogue",
+      SESSION_SECRET: "replace-with-a-random-string-at-least-32-characters-long"
+    }),
+    /SESSION_SECRET/
   );
 });
 
 test("configuration accepts only secure API origins suitable for public browser config", () => {
-  const base = { DATABASE_URL: "postgres://localhost/catalogue" };
+  const base = validTestConfig;
   assert.equal(
     readConfig({ ...base, API_BASE_URL: "https://api.chai.example" }).apiBaseUrl,
     "https://api.chai.example"
@@ -115,11 +133,15 @@ test("configuration accepts only secure API origins suitable for public browser 
 test("public runtime config and CSP use the configured API origin", async () => {
   const app = createApp({
     pool: createFakePool(),
-    apiBaseUrl: "https://api.chai.example"
+    apiBaseUrl: "https://api.chai.example",
+    sessionSecret: testSessionSecret
   });
   const response = await request(app).get("/config.js").expect(200);
   assert.match(response.text, /https:\/\/api\.chai\.example/);
   assert.match(response.headers["content-security-policy"], /connect-src[^;]*https:\/\/api\.chai\.example/);
+  await request(app).get("/library.html").expect(200);
+  await request(app).get("/library.js").expect(200);
+  await request(app).get("/.env").expect(404);
 });
 
 test("health endpoint checks the database connection", async () => {
@@ -130,7 +152,7 @@ test("health endpoint checks the database connection", async () => {
 
 test("health endpoint reports a database outage as service unavailable", async () => {
   const pool = { async query() { throw new Error("database is offline"); } };
-  const app = createApp({ pool, logger: { error() {} } });
+  const app = createApp({ pool, sessionSecret: testSessionSecret, logger: { error() {} } });
   const response = await request(app).get("/api/health").expect(503);
   assert.equal(response.body.error.code, "DATABASE_UNAVAILABLE");
 });
@@ -220,6 +242,12 @@ test("CORS only permits configured origins and private project files are not ser
     .expect("Access-Control-Allow-Origin", "https://chai.example")
     .expect(200);
   await request(app).get("/api/health").set("Origin", "https://other.example").expect(403);
+  const blockedWrite = await request(app)
+    .post("/api/auth/register")
+    .set("Origin", "https://chai.example")
+    .send({ email: "cross-site@example.test", password: "A-long-test-password-123" })
+    .expect(403);
+  assert.equal(blockedWrite.body.error.code, "CROSS_ORIGIN_WRITE_BLOCKED");
   await request(app).get("/seeds/catalogue.sql").expect(404);
   await request(app).get("/src/config.js").expect(404);
   await request(app).get("/.env").expect(404);
@@ -253,6 +281,10 @@ test("Spotify URLs are generated only for a valid-shaped track ID", () => {
   );
   assert.equal(
     spotifyLinks("not-a-track-id", "A Song", "An Artist").spotifyEmbedUrl,
+    null
+  );
+  assert.equal(
+    spotifyLinks("......................", "A Song", "An Artist").spotifyEmbedUrl,
     null
   );
 });

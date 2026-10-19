@@ -17,7 +17,9 @@
     </a>
     <nav class="main-nav" aria-label="Main navigation">
       <a href="index.html#collections">Collections</a>
+      <a href="index.html#artists">Artists</a>
       <a href="index.html#songs">All songs</a>
+      <a href="library.html">Your library</a>
       <a href="index.html#about">About</a>
     </nav>
   </header>
@@ -60,6 +62,19 @@
         </div>
         <p class="result-count" id="song-count" role="status" aria-live="polite"></p>
       </div>
+      <section class="now-playing" aria-labelledby="player-title">
+        <div class="player-copy">
+          <p class="eyebrow">ONE PLAYER, ONE SONG AT A TIME</p>
+          <h3 id="player-title">Now on the radio</h3>
+          <p id="player-status" role="status" aria-live="polite">Choose a song below. Spotify playback is available only for a track with a verified Spotify ID.</p>
+          <a id="player-link" class="spotify-link" href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer" hidden>Open on Spotify ↗</a>
+        </div>
+        <div class="player-frame" id="player-frame" aria-live="polite">
+          <span class="player-dial" aria-hidden="true">♫</span>
+          <span>Ready when you are</span>
+        </div>
+      </section>
+      <p id="favorite-status" class="form-status" role="status" aria-live="polite"></p>
       <p class="state-message" id="loading-state" role="status" hidden>Pouring a fresh cup of songs...</p>
       <div class="empty-state error-state" id="error-state" role="alert" hidden>
         <span class="empty-cup" aria-hidden="true">☕</span>
@@ -70,8 +85,8 @@
       <div class="song-grid" id="song-grid" aria-live="polite"></div>
       <div class="empty-state" id="empty-state" hidden>
         <span class="empty-cup" aria-hidden="true">☕</span>
-        <h3>No songs in this cup just yet.</h3>
-        <p>Try another search, mood, or genre to find your next song.</p>
+        <h3 id="empty-title">No songs in this cup just yet.</h3>
+        <p id="empty-message">Try another search, mood, or genre to find your next song.</p>
       </div>
       <nav class="pagination" id="pagination" aria-label="Song pages" hidden>
         <button class="text-button" id="previous-page" type="button">← Previous</button>
@@ -83,8 +98,8 @@
 
   <footer class="site-footer" id="about">
     <a class="wordmark footer-wordmark" href="index.html">Moody<span class="wordmark-highlight">Beats</span><span class="wordmark-dot" aria-hidden="true">.</span></a>
-    <p>A small, independent song-discovery project. Spotify embeds appear where verified; no audio is hosted here.</p>
-    <a class="github-link" href="https://github.com/your-username/MoodyBeats" target="_blank" rel="noopener noreferrer">Add your GitHub repository <span aria-hidden="true">↗</span></a>
+    <p>A small, independent desi music-discovery project. Spotify embeds appear only for verified track IDs; playback depends on Spotify availability and terms. No audio is hosted here.</p>
+    <a class="github-link" href="https://github.com/J-tinChaudhary/MoodyBeats" target="_blank" rel="noopener noreferrer">View the project on GitHub <span aria-hidden="true">↗</span></a>
   </footer>
 </body>
 </html>

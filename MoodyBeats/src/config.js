@@ -11,6 +11,15 @@ function readConfig(environment = process.env) {
     throw new Error("DATABASE_URL is required. Copy .env.example to .env and configure PostgreSQL.");
   }
 
+  const sessionSecret = environment.SESSION_SECRET;
+  if (
+    typeof sessionSecret !== "string" ||
+    sessionSecret.length < 32 ||
+    sessionSecret.startsWith("replace-with-")
+  ) {
+    throw new Error("SESSION_SECRET is required and must contain at least 32 characters.");
+  }
+
   let parsedDatabaseUrl;
   try {
     parsedDatabaseUrl = new URL(databaseUrl);
@@ -63,6 +72,7 @@ function readConfig(environment = process.env) {
   return {
     port,
     databaseUrl,
+    sessionSecret,
     allowedOrigins: new Set(allowedOrigins),
     apiBaseUrl,
     nodeEnv: environment.NODE_ENV || "development"

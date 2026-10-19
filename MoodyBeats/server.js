@@ -5,6 +5,8 @@ require("dotenv").config();
 const { readConfig } = require("./src/config");
 const { createPool } = require("./src/database");
 const { createApp } = require("./src/app");
+const connectPgSimple = require("connect-pg-simple");
+const session = require("express-session");
 
 let config;
 try {
@@ -15,13 +17,21 @@ try {
 }
 
 const pool = createPool(config.databaseUrl);
+const PgSessionStore = connectPgSimple(session);
 pool.on("error", error => {
   console.error("Unexpected error from an idle PostgreSQL connection:", error);
 });
 const app = createApp({
   pool,
   allowedOrigins: config.allowedOrigins,
-  apiBaseUrl: config.apiBaseUrl
+  apiBaseUrl: config.apiBaseUrl,
+  sessionSecret: config.sessionSecret,
+  sessionStore: new PgSessionStore({
+    pool,
+    tableName: "user_sessions",
+    createTableIfMissing: false
+  }),
+  secureCookies: config.nodeEnv === "production"
 });
 const server = app.listen(config.port, () => {
   console.log(`MoodyBeats is running at http://localhost:${config.port}`);

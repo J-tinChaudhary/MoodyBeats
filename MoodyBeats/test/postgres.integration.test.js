@@ -7,6 +7,7 @@ const path = require("node:path");
 const { Pool } = require("pg");
 const request = require("supertest");
 const { createApp } = require("../src/app");
+const testSessionSecret = "a-test-session-secret-with-at-least-32-characters";
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 
@@ -27,14 +28,19 @@ test("PostgreSQL migrations, seed data, search, and collection filters work toge
       path.join(__dirname, "..", "migrations", "001_initial_schema.sql"),
       "utf8"
     );
+    const accountsMigration = await fs.readFile(
+      path.join(__dirname, "..", "migrations", "002_accounts_and_library.sql"),
+      "utf8"
+    );
     const seed = await fs.readFile(
       path.join(__dirname, "..", "seeds", "catalogue.sql"),
       "utf8"
     );
     await pool.query(migration);
+    await pool.query(accountsMigration);
     await pool.query(seed);
 
-    const app = createApp({ pool, logger: { error() {} } });
+    const app = createApp({ pool, sessionSecret: testSessionSecret, logger: { error() {} } });
     const response = await request(app)
       .get("/api/songs")
       .query({
@@ -55,8 +61,8 @@ test("PostgreSQL migrations, seed data, search, and collection filters work toge
     const collectionResponse = await request(app)
       .get("/api/collections/chai-chill")
       .expect(200);
-    assert.equal(collectionResponse.body.collection.title, "Chai & Chill");
-    assert.equal(collectionResponse.body.pagination.total, 5);
+    assert.equal(collectionResponse.body.collection.title, "Chai Ki Tapri");
+    assert.equal(collectionResponse.body.pagination.total, 6);
     assert.equal(collectionResponse.body.songs[0].spotifyEmbedUrl, null);
 
     await assert.rejects(
